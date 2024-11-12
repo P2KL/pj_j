@@ -1,6 +1,6 @@
 # Setup Instructions
 To get started with the application, you need to install the required packages and set up your server. Please follow the steps below:
-  ##1)
+  ## 1)
   Initialize the Project: Open your terminal or command prompt and navigate to the project directory. Run the following command to create a package.json file with default settings:
   
           npm init -y
@@ -70,4 +70,4 @@ and also this is mysql code that you need to create your database:
 
 but don't forgot to create you schema first tho
 
-##good luck 💚
+## good luck 💚
