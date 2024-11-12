@@ -1,5 +1,6 @@
 Setup Instructions
 To get started with the application, you need to install the required packages and set up your server. Please follow the steps below:
+
   1)Initialize the Project: Open your terminal or command prompt and navigate to the project directory. Run the following command to create a package.json file with default settings:
   
           npm init -y
