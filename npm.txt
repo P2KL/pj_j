@@ -1,0 +1,4 @@
+npm init -y
+npm install express mysql2 express-session ejs
+npm install multer
+npm install bcrypt

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Detail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-blue-50 font-roboto">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto p-4 flex justify-between items-center">
+            <div class="text-lg font-bold">Tripster</div>
+            <a href="/places" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300">ไปยังหน้าหลัก</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto mt-8 p-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <!-- Place Details -->
+            <h1 class="text-3xl font-bold text-orange-500 mb-4"><%= place.name %></h1>
+            
+            <!-- Images Grid -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <% if (place.image1) { %>
+                    <img src="<%= place.image1 %>" alt="Image 1" class="w-full h-64 object-cover rounded-lg"/>
+                <% } %>
+                <% if (place.image2) { %>
+                    <img src="<%= place.image2 %>" alt="Image 2" class="w-full h-64 object-cover rounded-lg"/>
+                <% } %>
+                <% if (place.image3) { %>
+                    <img src="<%= place.image3 %>" alt="Image 3" class="w-full h-64 object-cover rounded-lg"/>
+                <% } %>
+                <% if (place.image4) { %>
+                    <img src="<%= place.image4 %>" alt="Image 4" class="w-full h-64 object-cover rounded-lg"/>
+                <% } %>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">คำอธิบาย</h2>
+                <p class="text-gray-600"><%= place.more_description %></p>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">รีวิว</h2>
+                <div class="space-y-4">
+                    <% reviews.forEach(review => { %>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-2"> <!-- ใช้ flex เพื่อจัดให้อยู่บรรทัดเดียวกัน -->
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                        <%= review.username ? review.username.charAt(0).toUpperCase() : '?' %>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="font-bold text-gray-800"><%= review.username || 'Anonymous' %></p>
+                                        <p class="text-sm text-gray-500">
+                                            <%= new Date(review.created_at).toLocaleDateString() %>
+                                        </p>
+                                    </div>
+                                </div>
+                                        <!-- Show Edit and Delete buttons for the logged-in user's own reviews -->
+                                <% if (currentUser && currentUser.id === review.user_id) { %>
+                                    <div class="review">
+                                        <form action="/review/<%= review.id %>/edit" method="GET" style="display:inline;">
+                                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300">
+                                                Edit</button>
+                                        </form>
+                                        <form action="/review/<%= review.id %>/delete" method="POST" style="display:inline;">
+                                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300" onclick="return confirm('คุณแน่ใจหรือว่าต้องการลบรีวิวนี้?');">
+                                                Delete</button>
+                                        </form>
+                                    </div>
+                                <% } %>
+
+                                
+                                
+                            </div>
+                            <p class="text-gray-700 mt-2"><%= review.text %></p>
+                
+                            <!-- แสดงรูปภาพรีวิว -->
+                            <% if (review.image) { %>
+                                <div class="mt-4">
+                                    <img 
+                                        src="<%= review.image %>" 
+                                        alt="Review image" 
+                                        class="max-w-md h-auto rounded-lg shadow-md"
+                                    >
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <!-- Add Review Form -->
+            <div>
+                <h2 class="text-2xl font-bold mb-4">เพิ่มรีวิว</h2>
+                <% if (currentUser) { %>
+                    <form action="/place/<%= place.id %>/review" method="POST" class="space-y-4" enctype="multipart/form-data">
+                        <div>
+                            <textarea 
+                                name="reviewText" 
+                                rows="4" 
+                                class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Write your review here..."
+                                required
+                            ></textarea>
+                        </div>
+                        <div>
+                            <label for="reviewImage" class="block text-sm font-medium text-gray-700">เพิ่มรูปภาพ(ไม่จำเป็น)</label>
+                            <input 
+                                type="file" 
+                                id="reviewImage" 
+                                name="reviewImage" 
+                                accept="image/*" 
+                                class="mt-1 block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                    hover:file:bg-blue-100"
+                            >
+                        </div>
+                        <button 
+                            type="submit" 
+                            class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                        >
+                            เพิ่มรีวิว
+                        </button>
+                    </form>
+                <% } else { %>
+                    <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                        <p class="text-yellow-700">Please <a href="/" class="text-blue-500 hover:underline">login</a> to add a review.</p>
+                    </div>
+                <% } %>
+            </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-16 py-8 shadow-inner">
+        <div class="container mx-auto px-4">
+            <div class="text-center text-gray-600">
+                <p>"การเดินทางคือการลงทุนในความทรงจำที่ไม่มีวันจางหาย"</p>
+                <div class="mt-4 space-x-4">
+                    <a href="#" class="text-blue-500 hover:text-blue-600"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-red-400 hover:text-red-500"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="text-pink-500 hover:text-pink-600"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
